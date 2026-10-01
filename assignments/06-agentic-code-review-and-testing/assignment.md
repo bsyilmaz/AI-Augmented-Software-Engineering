@@ -51,7 +51,7 @@ build on a failing test. Document the commands.
 4. Run your **AI reviewer** on the PR.
 
 ## Deliverables
-**Submit the GitHub repository link** for `starter/` (with the two PRs) and a `writeup.md`:
+**Submit the GitHub repository link** for your `habit-tracker` repo (with the two PRs) and a `writeup.md`:
 - **Two PRs**, each with a clear description, commit links, and visible AI review comments.
 - Your guardrail setup (commands + what they catch).
 - A comparison: **your** review comments vs. **the AI's** for each PR — where the AI was
