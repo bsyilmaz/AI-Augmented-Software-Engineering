@@ -21,12 +21,23 @@ A working starter app is in [`starter/`](starter/) — you extend it, you don't 
 ---
 
 ## Setup
+Your two PRs and the AI review belong in **your own** GitHub repo, not the course repo
+(you can't install a reviewer app there). From the course repo root, copy the starter
+into a new repo first:
 ```bash
-cd starter && pip install -r requirements.txt && pytest   # 3 tests should pass
+cp -r assignments/06-agentic-code-review-and-testing/starter ~/habit-tracker
+cd ~/habit-tracker
+printf '*.db\n__pycache__/\n.venv/\n' > .gitignore   # keep the local DB and caches out of git
+git init && git add . && git commit -m "Initial habit-tracker starter"
+gh repo create habit-tracker --public --source=. --push
+```
+Then install and run it:
+```bash
+pip install -r requirements.txt && pytest   # 3 tests should pass
 uvicorn main:app --reload
 ```
 Sign up for your AI reviewer (Graphite: https://app.graphite.dev/signup) and install its
-GitHub app so it can comment on PRs.
+GitHub app **on your `habit-tracker` repo** so it can comment on PRs.
 
 ## What to do
 **Part I — guardrails.** Add lint+format (black+ruff) and confirm `pytest` fails the
