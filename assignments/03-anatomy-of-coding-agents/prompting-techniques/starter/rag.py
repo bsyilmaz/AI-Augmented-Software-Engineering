@@ -20,13 +20,43 @@ def load_chunks() -> list[str]:
         return [line.strip() for line in f if line.strip()]
 
 
-# TODO: return the subset of chunks relevant to `question` (simple keyword overlap is fine).
+STOPWORDS = {
+    "a", "an", "and", "are", "can", "do", "does", "for", "have", "how", "i", "if", "in", "is",
+    "it", "long", "my", "of", "on", "or", "s", "the", "to", "what", "whats", "when", "where",
+    "which", "who", "why", "with", "you", "your",
+}
+
+
+def _words(text: str) -> set[str]:
+    cleaned = "".join(ch if ch.isalnum() else " " for ch in text.lower().replace("'", ""))
+    return {w for w in cleaned.split() if w not in STOPWORDS}
+
+
+def _related(a: str, b: str) -> bool:
+    # Crude stemming: "ship" ~ "shipping", "internationally" ~ "international".
+    short, long_ = sorted((a, b), key=len)
+    return len(short) >= 4 and long_.startswith(short)
+
+
 def YOUR_RETRIEVER(question: str, chunks: list[str]) -> list[str]:
-    return []
+    q_words = _words(question)
+    scored = []
+    for chunk in chunks:
+        overlap = sum(any(_related(q, c) for c in _words(chunk)) for q in q_words)
+        if overlap:
+            scored.append((overlap, chunk))
+    scored.sort(key=lambda pair: pair[0], reverse=True)
+    return [chunk for _, chunk in scored[:3]]
 
 
-# TODO: Fill this in! Force the model to answer only from the provided context.
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You are a support assistant for an online store.
+Answer the customer's question using ONLY the text under "Context". Do not use outside
+knowledge, and do not guess.
+- If the context answers the question, reply in one or two sentences and keep the key facts
+  (numbers, time limits) exactly as written in the context.
+- If the context is empty or does not contain the answer, reply exactly:
+  "I don't know. I can only answer questions covered by our help center."
+"""
 
 CASES = [
     ("How long do I have to return an item?", ["30 days"]),
