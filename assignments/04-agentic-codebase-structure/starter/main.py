@@ -57,19 +57,45 @@ def encode(n: int) -> str:
     return "".join(reversed(chars))
 
 
+UNREACHABLE_ALIASES = {"docs", "redoc", "openapi.json"}
+
+
 class ShortenRequest(BaseModel):
     url: str
+    alias: str | None = None
 
 
 @app.post("/shorten")
 def shorten(req: ShortenRequest):
     if not req.url.startswith(("http://", "https://")):
         raise HTTPException(status_code=400, detail="url must start with http:// or https://")
+
+    if req.alias is not None:
+        if not req.alias.strip():
+            raise HTTPException(status_code=400, detail="alias must not be empty")
+        if "/" in req.alias or req.alias in UNREACHABLE_ALIASES:
+            raise HTTPException(status_code=400, detail="alias is not reachable")
+        with closing(get_db()) as conn:
+            try:
+                conn.execute("INSERT INTO links (url, code) VALUES (?, ?)", (req.url, req.alias))
+            except sqlite3.IntegrityError:
+                raise HTTPException(status_code=409, detail="alias already taken")
+            conn.commit()
+        return {"code": req.alias, "short_url": f"/{req.alias}"}
+
     with closing(get_db()) as conn:
         cur = conn.execute("INSERT INTO links (url) VALUES (?)", (req.url,))
         row_id = cur.lastrowid
-        code = encode(row_id)
-        conn.execute("UPDATE links SET code = ? WHERE id = ?", (code, row_id))
+        base_code = encode(row_id)
+        code = base_code
+        suffix = 2
+        while True:
+            try:
+                conn.execute("UPDATE links SET code = ? WHERE id = ?", (code, row_id))
+                break
+            except sqlite3.IntegrityError:
+                code = f"{base_code}{suffix}"
+                suffix += 1
         conn.commit()
     return {"code": code, "short_url": f"/{code}"}
 
