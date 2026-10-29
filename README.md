@@ -25,7 +25,7 @@ AI-augmented software engineering is the practice of using AI systems — code a
 
 ## Midterm
 
-The midterm (25 multiple-choice questions, 1 hour, 30% of the grade) covers Lectures 1–5 and their required readings. See the [Midterm Study Guide](resources/midterm-study-guide/).
+The midterm (25 multiple-choice questions, 1 hour, 40% of the grade) covers Lectures 1–5 and their required readings. See the [Midterm Study Guide](resources/midterm-study-guide/).
 
 ## Repository Structure
 

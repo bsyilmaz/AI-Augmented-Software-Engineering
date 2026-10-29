@@ -6,7 +6,7 @@
 | --- | --- |
 | **When** | Friday, November 6, in class |
 | **Format** | 25 multiple-choice questions, 1 hour, closed book |
-| **Weight** | 30% of the final grade |
+| **Weight** | 40% of the final grade |
 | **Covers** | Lectures 1–5 and the required readings for those weeks |
 | **AI use** | None. The midterm is your own work. |
 
